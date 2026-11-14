@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  box-assembly-test:
+    build: .
+    container_name: box-assembly-test
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1

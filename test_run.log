@@ -1,0 +1,104 @@
+2026-11-14 01:46:13,298 [INFO] tests.conftest: ======================================================================
+2026-11-14 01:46:13,298 [INFO] tests.conftest: PYTEST CONFIGURATION LOADED
+2026-11-14 01:46:13,298 [INFO] tests.conftest: ======================================================================
+2026-11-14 01:46:13,946 [INFO] matplotlib.font_manager: generated new fontManager
+2026-11-14 01:46:14,055 [INFO] tests.test_box_assembly: Loaded body: /app/bottom.stl
+2026-11-14 01:46:14,055 [INFO] tests.test_box_assembly:   Vertices: 668, Faces: 1316
+2026-11-14 01:46:14,055 [INFO] tests.test_box_assembly: Loaded lid: /app/top.stl
+2026-11-14 01:46:14,055 [INFO] tests.test_box_assembly:   Vertices: 480, Faces: 948
+2026-11-14 01:46:14,055 [INFO] tests.test_box_assembly: 
+=== HINGE DETECTION PHASE ===
+2026-11-14 01:46:14,056 [INFO] hinge_detector: Body centroid: [-6.32456127e-14  2.04380005e-01  2.05192965e+01]
+2026-11-14 01:46:14,056 [INFO] hinge_detector: Lid centroid: [2.86559504e-06 8.16074449e-01 6.77621640e+01]
+2026-11-14 01:46:14,056 [INFO] hinge_detector: Starting hinge detection pipeline...
+2026-11-14 01:46:14,062 [INFO] hinge_detector: 
+--- Simulating rotations around X-axis (Roll) ---
+2026-11-14 01:46:14,067 [INFO] hinge_detector:   Angle    0.0°: Body (0.0, 0.0, 0.0), Lid (1.0522653319764252, 11.694858503984523, 30.486656163637445)
+2026-11-14 01:46:14,071 [INFO] hinge_detector:   Angle   10.0°: Body (0.0, 0.0, 0.0), Lid (0.028830259130577098, -15.493501759581664, 48.34583914272928)
+2026-11-14 01:46:14,075 [INFO] hinge_detector:   Angle   20.0°: Body (0.0, 0.0, 0.0), Lid (-0.3144854786131797, -40.72307614281598, 54.940712769084335)
+2026-11-14 01:46:14,078 [INFO] hinge_detector:   Angle   30.0°: Body (0.0, 0.0, 0.0), Lid (0.156118193941566, -45.02194149296821, 56.14378989868392)
+2026-11-14 01:46:14,081 [INFO] hinge_detector:   Angle   40.0°: Body (0.0, 0.0, 0.0), Lid (-0.8833667345179959, -54.301448934515, 42.83954177865366)
+2026-11-14 01:46:14,083 [INFO] hinge_detector:   Angle   50.0°: Body (0.0, 0.0, 0.0), Lid (-0.5091123690942094, -53.876690335403886, 42.43951014985077)
+2026-11-14 01:46:14,086 [INFO] hinge_detector:   Angle   60.0°: Body (0.0, 0.0, 0.0), Lid (0.34768892200052726, -44.121269576578634, -3.447239367755733)
+2026-11-14 01:46:14,089 [INFO] hinge_detector:   Angle   70.0°: Body (0.0, 0.0, 0.0), Lid (-2.290003706170029, -45.027636172481294, 2.392337939814993)
+2026-11-14 01:46:14,091 [INFO] hinge_detector:   Angle   80.0°: Body (0.0, 0.0, 0.0), Lid (-0.014345200230305473, -31.010042761850485, 1.3649687936395822)
+2026-11-14 01:46:14,093 [INFO] hinge_detector:   Angle   90.0°: Body (0.0, 0.0, 0.0), Lid (0.0, 0.0, -16.760417903943058)
+2026-11-14 01:46:14,093 [INFO] hinge_detector: 
+--- Simulating rotations around Y-axis (Pitch) ---
+2026-11-14 01:46:14,096 [INFO] hinge_detector:   Angle    0.0°: Body (0.0, 0.0, 0.0), Lid (1.0522653319764252, 11.694858503984523, 30.486656163637445)
+2026-11-14 01:46:14,099 [INFO] hinge_detector:   Angle   10.0°: Body (0.0, 0.0, 0.0), Lid (24.872815718773207, 6.759873278908155, 60.75992167752124)
+2026-11-14 01:46:14,102 [INFO] hinge_detector:   Angle   20.0°: Body (0.0, 0.0, 0.0), Lid (42.71684401099898, 14.413287578345722, 50.55721207880223)
+2026-11-14 01:46:14,106 [INFO] hinge_detector:   Angle   30.0°: Body (0.0, 0.0, 0.0), Lid (35.2156217015183, 17.958210004885952, 58.02319518324358)
+2026-11-14 01:46:14,110 [INFO] hinge_detector:   Angle   40.0°: Body (0.0, 0.0, 0.0), Lid (46.93034446763903, 11.631788284852268, 50.45746897695094)
+2026-11-14 01:46:14,113 [INFO] hinge_detector:   Angle   50.0°: Body (0.0, 0.0, 0.0), Lid (47.603112743777125, -6.780163164672193, 55.14895565973676)
+2026-11-14 01:46:14,116 [INFO] hinge_detector:   Angle   60.0°: Body (0.0, 0.0, 0.0), Lid (86.8375415694805, -6.236189321143619, 15.074675109675455)
+2026-11-14 01:46:14,119 [INFO] hinge_detector:   Angle   70.0°: Body (0.0, 0.0, 0.0), Lid (31.164698627816556, -21.804539662928253, -58.36462037832477)
+2026-11-14 01:46:14,122 [INFO] hinge_detector:   Angle   80.0°: Body (0.0, 0.0, 0.0), Lid (24.91517319254206, 26.296266682689517, -72.58253783447282)
+2026-11-14 01:46:14,125 [INFO] hinge_detector:   Angle   90.0°: Body (0.0, 0.0, 0.0), Lid (74.00153735225643, -3.950774667881031, -26.50798025347145)
+2026-11-14 01:46:14,125 [INFO] hinge_detector: 
+--- Simulating rotations around Z-axis (Yaw) ---
+2026-11-14 01:46:14,128 [INFO] hinge_detector:   Angle    0.0°: Body (0.0, 0.0, 0.0), Lid (1.0522653319764252, 11.694858503984523, 30.486656163637445)
+2026-11-14 01:46:14,131 [INFO] hinge_detector:   Angle   10.0°: Body (0.0, 0.0, 0.0), Lid (-3.5339380025571674, 6.833647409998123, 36.8145774656071)
+2026-11-14 01:46:14,134 [INFO] hinge_detector:   Angle   20.0°: Body (0.0, 0.0, 0.0), Lid (-5.765985016832415, 5.752309801318239, 36.84821332398419)
+2026-11-14 01:46:14,137 [INFO] hinge_detector:   Angle   30.0°: Body (0.0, 0.0, 0.0), Lid (-6.851535167961294, 6.4975162936942095, 35.17110641673767)
+2026-11-14 01:46:14,140 [INFO] hinge_detector:   Angle   40.0°: Body (0.0, 0.0, 0.0), Lid (-7.785375819733325, 6.815491528920235, 33.66818852974268)
+2026-11-14 01:46:14,143 [INFO] hinge_detector:   Angle   50.0°: Body (0.0, 0.0, 0.0), Lid (-7.957798780053775, 6.445998356059778, 31.636291352497402)
+2026-11-14 01:46:14,146 [INFO] hinge_detector:   Angle   60.0°: Body (0.0, 0.0, 0.0), Lid (-7.223265901289675, 6.872740754667563, 29.91970919341761)
+2026-11-14 01:46:14,149 [INFO] hinge_detector:   Angle   70.0°: Body (0.0, 0.0, 0.0), Lid (-9.186024046904855, 4.076809375496966, 30.193628189911916)
+2026-11-14 01:46:14,151 [INFO] hinge_detector:   Angle   80.0°: Body (0.0, 0.0, 0.0), Lid (-9.49873682159205, 2.7502848034666716, 29.999658466752134)
+2026-11-14 01:46:14,154 [INFO] hinge_detector:   Angle   90.0°: Body (0.0, 0.0, 0.0), Lid (-10.25107866509975, -0.2839684062863793, 29.369089766932778)
+2026-11-14 01:46:14,154 [INFO] hinge_detector: Collected 30 tracking samples
+2026-11-14 01:46:14,154 [INFO] hinge_detector: 
+Analyzing X-axis (Roll) rotations...
+2026-11-14 01:46:14,155 [INFO] hinge_detector:   Lid position range: min=[ -2.29000371 -54.30144893 -16.7604179 ], max=[ 1.05226533 11.6948585  56.1437899 ]
+2026-11-14 01:46:14,155 [INFO] hinge_detector:   Body position: [0. 0. 0.]
+2026-11-14 01:46:14,155 [INFO] hinge_detector:   Candidate hinge: [ 0.         55.29999924 60.        ]
+2026-11-14 01:46:14,155 [INFO] hinge_detector:   Rotation axis: [1 0 0]
+2026-11-14 01:46:14,155 [INFO] hinge_detector: 
+Analyzing Y-axis (Pitch) rotations...
+2026-11-14 01:46:14,156 [INFO] hinge_detector:   Lid position range: min=[  1.05226533 -21.80453966 -72.58253783], max=[86.83754157 26.29626668 60.75992168]
+2026-11-14 01:46:14,156 [INFO] hinge_detector:   Body position: [0. 0. 0.]
+2026-11-14 01:46:14,156 [INFO] hinge_detector:   Candidate hinge: [ 0.         55.29999924 60.        ]
+2026-11-14 01:46:14,156 [INFO] hinge_detector:   Rotation axis: [0 1 0]
+2026-11-14 01:46:14,156 [INFO] hinge_detector: 
+Analyzing Z-axis (Yaw) rotations...
+2026-11-14 01:46:14,156 [INFO] hinge_detector:   Lid position range: min=[-10.25107867  -0.28396841  29.36908977], max=[ 1.05226533 11.6948585  36.84821332]
+2026-11-14 01:46:14,156 [INFO] hinge_detector:   Body position: [0. 0. 0.]
+2026-11-14 01:46:14,157 [INFO] hinge_detector:   Candidate hinge: [ 0.         55.29999924 60.        ]
+2026-11-14 01:46:14,157 [INFO] hinge_detector:   Rotation axis: [0 0 1]
+2026-11-14 01:46:14,157 [INFO] hinge_detector: 
+✓ DETECTED HINGE:
+2026-11-14 01:46:14,157 [INFO] hinge_detector:   Origin: [ 0.         55.29999924 60.        ]
+2026-11-14 01:46:14,157 [INFO] hinge_detector:   Axis: [1 0 0]
+2026-11-14 01:46:14,157 [INFO] tests.test_box_assembly: 
+✓ HINGE DETECTION SUCCESSFUL:
+2026-11-14 01:46:14,157 [INFO] tests.test_box_assembly:   Origin: [ 0.         55.29999924 60.        ]
+2026-11-14 01:46:14,157 [INFO] tests.test_box_assembly:   Axis: [1 0 0]
+2026-11-14 01:46:14,257 [INFO] tests.test_box_assembly: ✓ Lid stays attached at 0° (closed position)
+2026-11-14 01:46:14,347 [INFO] tests.test_box_assembly: ✓ Lid stays attached at 45°
+2026-11-14 01:46:14,449 [INFO] tests.test_box_assembly: ✓ Lid stays attached at 90°
+2026-11-14 01:46:14,451 [INFO] tests.test_box_assembly:   ✓    0.0° - Rotation successful
+2026-11-14 01:46:14,451 [INFO] tests.test_box_assembly:   ✓   10.0° - Rotation successful
+2026-11-14 01:46:14,451 [INFO] tests.test_box_assembly:   ✓   20.0° - Rotation successful
+2026-11-14 01:46:14,452 [INFO] tests.test_box_assembly:   ✓   30.0° - Rotation successful
+2026-11-14 01:46:14,452 [INFO] tests.test_box_assembly:   ✓   40.0° - Rotation successful
+2026-11-14 01:46:14,452 [INFO] tests.test_box_assembly:   ✓   50.0° - Rotation successful
+2026-11-14 01:46:14,452 [INFO] tests.test_box_assembly:   ✓   60.0° - Rotation successful
+2026-11-14 01:46:14,453 [INFO] tests.test_box_assembly:   ✓   70.0° - Rotation successful
+2026-11-14 01:46:14,453 [INFO] tests.test_box_assembly:   ✓   80.0° - Rotation successful
+2026-11-14 01:46:14,453 [INFO] tests.test_box_assembly:   ✓   90.0° - Rotation successful
+2026-11-14 01:46:14,453 [INFO] tests.test_box_assembly: ✓ Lid rotation range: 0° to 90°
+2026-11-14 01:46:14,454 [INFO] tests.test_box_assembly: Body watertight: True
+2026-11-14 01:46:14,455 [INFO] tests.test_box_assembly: Lid watertight: True
+2026-11-14 01:46:14,455 [INFO] tests.test_box_assembly: Combined assembly:
+2026-11-14 01:46:14,455 [INFO] tests.test_box_assembly:   Vertices: 1148
+2026-11-14 01:46:14,456 [INFO] tests.test_box_assembly:   Faces: 2264
+2026-11-14 01:46:14,457 [INFO] tests.test_box_assembly:   Volume: 159465.07
+2026-11-14 01:46:14,457 [INFO] tests.test_box_assembly:   Watertight: True
+2026-11-14 01:46:14,463 [INFO] tests.test_box_assembly: Note: Small overlap in closed state is acceptable (lid on body)
+2026-11-14 01:46:14,495 [INFO] tests.conftest: 
+======================================================================
+2026-11-14 01:46:14,496 [INFO] tests.conftest: TEST SESSION SUMMARY
+2026-11-14 01:46:14,496 [INFO] tests.conftest: ======================================================================
+2026-11-14 01:46:14,498 [INFO] tests.conftest: ✓ HTML report generated with 15 image(s)
+2026-11-14 01:46:14,498 [INFO] tests.conftest: ======================================================================
