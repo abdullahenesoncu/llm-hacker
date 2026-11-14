@@ -1,36 +1,21 @@
-FROM python:3.11
-
-# Sistem paketlerini yükle (derleyici ve kütüphaneler)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    cmake \
-    git \
-    liboctomap-dev \
-    libfcl-dev \
-    libomp-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Python paketlerini yükle
-RUN pip install --no-cache-dir \
-    trimesh \
-    numpy \
-    scipy \
-    scikit-learn \
-    pybullet \
-    python-fcl \
-    pytest \
-    matplotlib
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# STL dosyalarını kopyala
-COPY bottom.stl /app/
-COPY top.stl /app/
+RUN apt-get update && apt-get install -y \
+    build-essential gcc g++ \
+    liboctomap-dev libfcl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Test scriptini kopyala
-COPY test_assembly.py /app/
+COPY . /app
 
-# Test dosyalarını kopyala
-COPY tests/ /app/tests/
+RUN pip install --no-cache-dir \
+    trimesh \
+    pytest \
+    pytest-html \
+    scipy \
+    numpy \
+    matplotlib \
+    pybullet
 
-CMD ["pytest", "-v", "tests/"]
+CMD ["python", "test.py"]
