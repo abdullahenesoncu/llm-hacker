@@ -1,9 +1,16 @@
-Generate a complete OpenSCAD script for a 3D printable parametric storage box with a bottom body and a top lid.
+Generate a complete OpenSCAD script for a 3D printable parametric storage box with a hinged lid.
 
-Key Requirements:
-1. Dimensions & Structure: Customizable dimensions, uniform wall thickness, split into two separate parts (bottom and lid).
-2. Tight Fit & Seal: The lid must fit snugly onto the body using a stepped/lip joint so there are no gaps when closed.
-3. Secure Hinge (Long Edge): A functional mechanical hinge along one of the long edges. It must securely retain the lid so it doesn't detach or fall off on its own during normal opening.
-4. Snap-Fit Latch (Opposite Edge): A functional snap-fit latch on the closing edge that clicks securely into place and can be opened manually without extra hardware.
-5. FDM Tolerances: Include at least 0.3 mm mechanical clearance between moving parts (hinges and latch) so they operate smoothly and don't fuse together during 3D printing.
-6. Code Quality: Clean, modular OpenSCAD code with customizable variables at the top.
+Write the script to `/workspace/box.scad` and render 4 stl files from it, all in `/workspace`:
+- `bottom.stl`: the box body
+- `top.stl`: the lid
+- `hinge_bottom.stl`: the hinge part that belongs to the box body
+- `hinge_top.stl`: the hinge part that belongs to the lid
+
+All 4 parts must be modelled in the same coordinate system, so that loading them together without any transform gives a complete, closed box with a lid and a bottom part.
+
+Requirements:
+- Every stl must be a closed (watertight) mesh, and the 4 parts together must be watertight as well.
+- The parts must not overlap volumetrically; they may only touch.
+- The lid must not be able to move independently from the box: it must not be possible to slide the box body and hinge_bottom away from the lid and hinge_top in any direction.
+- `hinge_bottom` and `hinge_top` must be in contact with each other (clearance below about 0.5 mm) and form a rotary joint. The hinge axis is derived from the area where the two hinge parts touch, so nothing else may be assumed about its position or direction.
+- Rotating the lid and `hinge_top` around that hinge axis, in either the + or the - direction, by any angle from 0 to 180 degrees must not make them collide with the box body or `hinge_bottom`.

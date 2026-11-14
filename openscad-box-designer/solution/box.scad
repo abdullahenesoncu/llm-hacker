@@ -1,273 +1,230 @@
+include <BOSL2/std.scad>
+
 $fn = 64;
 
 /* [Size] */
-// Outer box width (X)
-width = 200;
-// Outer box depth (Y)
-depth = 100;
+// Box width
+width = 200; // [30:1:256]
+// Box depth
+depth = 100; // [30:1:256]
 // Lid height
-height_top = 10;
-// Bottom part height up to the rim (lip not included)
-height_bottom = 60;
+height_top = 10; // [10:1:256]
+// Bottom part height
+height_bottom = 60; // [10:1:256]
 // Wall thickness
 wall = 2;
 
-/* [Fit] */
-// Mechanical clearance between moving parts
-clearance = 0.3;
-// Height of the stepped lip that locks the lid sideways
-lip_height = 3;
-// Gap between the lid recess and the lip
-lip_gap = 0.2;
-
 /* [Hinges] */
 // Distance from box side to the hinges
-hinge_from_wall = 10;
+hinge_from_wall = 10; // [7:1:120]
 // Width of the hinges
-hinge_width = 10;
+hinge_width = 10; // [4:1:50]
 
-/* [Latch] */
-// Latch size
-latch_width = 5;
 
-/* [Output] */
-// bottom: body, lid: lid in print orientation, lid_closed: lid in closed position, all: preview
-part = "all"; // [bottom, lid, lid_closed, all]
+/* [Other] */
+// Show as two separate pieces
+exploded = false;
+// Which part to render: all, bottom, top, hinge_bottom or hinge_top
+show = "all"; // [all:bottom:top:hinge_bottom:hinge_top]
 
-hinge_distance = width / 2 - hinge_from_wall - hinge_width / 2;
+// Simple parser
+function parse_string(input_str) =
+let(
+    // Split the input string into blocks (separated by spaces)
+    blocks = [for (s = str_split(input_str, " ")) s],
 
-// Latch ridge profile on the bottom part: x = outward from the wall, y = down from the top
-ridge_depth = 1.5;
-ridge_base = 3.5;
-ridge_tip = 2;
-ridge_drop = 1.3; // distance from the rim to the top of the ridge
-ridge_points = [
-        [-0.5, 0], // extends into the wall so the ridge fuses with it
-        [0, 0],
-        [ridge_depth, (ridge_base - ridge_tip) / 2],
-        [ridge_depth, (ridge_base - ridge_tip) / 2 + ridge_tip],
-        [0, ridge_base],
-        [-0.5, ridge_base]
-    ];
+    // Process each block into its own array
+    result = [for (block = blocks)
+        let(
+            // First character is the type (v or h)
+            type = substr(block, 0, 1),
+            // Rest is numbers separated by commas
+            numbers_str = substr(block, 1),
+            // Split numbers by comma and convert to numbers
+            numbers = [for (n = str_split(numbers_str, ",")) is_letter(n) ? n : parse_float(n)]
+        )
+        concat([type], numbers)
+        ]
+)
+result;
 
-latch_thickness = 3;
-latch_height = 5.68;
-latch_arm_width = latch_width + 10;
+// Actual code
+module box() {
+    hinge_distance = width / 2 - hinge_from_wall - hinge_width / 2;
 
-// Hinge pin (bottom part) and socket (lid) cones
-pin_radius = 2.4;
-pin_height = 1.0;
-socket_radius = 2.8;
-socket_height = 1.25;
+    module box_with_cutout(width, depth, height, wall) {
+        difference() {
+            translate([-width / 2, -depth / 2, 0])
+                cube([width, depth, height]);
 
-module box_with_cutout(width, depth, height, wall) {
-    difference() {
-        translate([-width / 2, -depth / 2, 0])
-            cube([width, depth, height]);
-
-        translate([-width / 2 + wall, -depth / 2 + wall, wall])
-            // +1 keeps the cut-out open at the top
-            cube([width - wall * 2, depth - wall * 2, height - wall + 1]);
-    }
-}
-
-// Inner half of the bottom wall rising above the rim
-module lip() {
-    translate([0, 0, height_bottom - 0.01])
-        linear_extrude(height = lip_height + 0.01)
-            difference() {
-                square([width - wall, depth - wall], center = true);
-                square([width - wall * 2, depth - wall * 2], center = true);
-            }
-}
-
-// Pocket in the lid rim that receives the lip
-module lip_recess() {
-    inset = wall / 2 - lip_gap;
-    translate([-width / 2 + inset, -depth / 2 + inset, height_top - lip_height - lip_gap])
-        cube([width - inset * 2, depth - inset * 2, lip_height + lip_gap + 1]);
-}
-
-module bottom_latch() {
-    translate([-latch_width / 2, -depth / 2, height_bottom - ridge_drop])
-        rotate([90, 180, 90])
-            linear_extrude(height = latch_width)
-                polygon(points = ridge_points);
-}
-
-module bottom_hinge() {
-    w = hinge_width + 2.5; // outer width of the two arms
-    dist = 2.8; // distance from the wall
-    d = 5; // diameter of circle
-    t = 2.5; // thickness
-    ft = 2.5; // from top
-
-    module arm() {
-        translate([-t / 2, depth / 2 + dist, height_bottom - ft])
-            rotate([90, 180, 90])
-                linear_extrude(height = t)
-                    difference() {
-                        union() {
-                            circle(d = d);
-                            translate([0, -d / 2, 0])
-                                square([dist, d + d / 2]);
-                        }
-
-                        translate([0, (dist + d / 2), 0])
-                            circle(d = dist * 2);
-                    }
-
-        // anchor inside the wall
-        translate([-t / 2, depth / 2 - 1, height_bottom - ft - 4])
-            cube([t, 1.3, 6]);
+            translate([-width / 2 + wall, -depth / 2 + wall, wall])
+                // +1 is for fixing geometry in openscad
+                cube([width - wall * 2, depth - wall * 2, height - wall + 1]);
+        }
     }
 
-    module pin() {
-        rotate([0, 90, 0])
-            rotate_extrude()
-                polygon(points = [[0, 0], [pin_radius, 0], [0, pin_height]]);
-    }
+    module top_part(body = true, hinge = true) {
 
-    translate([hinge_distance, 0, 0]) {
-        translate([w / 2, 0, 0]) arm();
-        translate([-w / 2, 0, 0]) arm();
+        module hinge_2() {
+            a = 8.817;
+            b = 3.714;
+            c = 5.6;
+            e = 5.214;
+            hinge_depth = hinge_width - 0.3; // depth
+            offset_from_top = -1.1; // from top
 
-        translate([-w / 2 + t / 2, depth / 2 + dist, height_bottom - ft])
-            pin();
+            points = [
+                    [0, 0],
+                    [2.5, 0],
+                    [0, 0.9]
+                ];
 
-        translate([w / 2 - t / 2, depth / 2 + dist, height_bottom - ft])
-            rotate([0, 180, 0])
-                pin();
-    }
-}
+            module hinge_2_1() {
+                translate([-hinge_depth / 2, -depth / 2 - c / 2, a / 2 + height_top - e])
+                    rotate([90, -180, 90])
+                        difference() {
+                            linear_extrude(height = hinge_depth)
+                                union() {
+                                    translate([0, -(a - b) / 2, 0])
+                                        square([c, b], center = true);
 
-module lid_latch() {
-    some_radius = 2;
+                                    translate([0, -a / 2, 0])
+                                        circle(d = c);
 
-    translate([-latch_arm_width / 2, depth / 2 + latch_thickness / 2, height_top + latch_height / 2])
-        rotate([90, 0, 90])
-            difference() {
-                linear_extrude(height = latch_arm_width) {
-                    union() {
-                        square([latch_thickness, latch_height], center = true);
+                                    intersection() {
+                                        translate([-c / 2, -(c * 2 - a) / 2, 0])
+                                            circle(r = c);
 
-                        translate([0, latch_height / 2, 0])
-                            circle(d = latch_thickness);
-
-                        intersection() {
-                            translate([-some_radius + latch_thickness / 2, -latch_height / 2, 0])
-                                circle(r = some_radius);
-
-                            translate([0, -latch_height / 2, 0])
-                                square([latch_thickness, latch_height], center = true);
-                        }
-
-                        translate([-latch_thickness / 2, -6.6, 0])
-                            difference() {
-                                square([some_radius, some_radius]);
-
-                                translate([some_radius, 0, 0])
-                                    circle(r = some_radius);
-                            }
-                    }
-                }
-
-                // window for the bottom ridge, enlarged by the clearance
-                translate([-latch_thickness / 2 - 0.01, ridge_drop - latch_height / 2, latch_arm_width / 2])
-                    linear_extrude(height = latch_width + 2 * clearance, center = true)
-                        offset(delta = clearance)
-                            polygon(points = ridge_points);
-            }
-
-    // anchor inside the lid wall
-    translate([-latch_arm_width / 2, depth / 2 - 0.5, height_top - 3])
-        cube([latch_arm_width, 1.1, 3.8]);
-}
-
-module lid_hinge() {
-    a = 8.817;
-    b = 3.714;
-    c = 5.6;
-    e = 5.214;
-    knuckle_width = hinge_width - 2 * clearance;
-    offset_from_top = -1.1;
-
-    socket_points = [[0, 0], [socket_radius, 0], [0, socket_height]];
-
-    module knuckle() {
-        translate([-knuckle_width / 2, -depth / 2 - c / 2, a / 2 + height_top - e])
-            rotate([90, -180, 90])
-                difference() {
-                    linear_extrude(height = knuckle_width)
-                        union() {
-                            translate([0, -(a - b) / 2, 0])
-                                square([c, b], center = true);
+                                        square([c, a], center = true);
+                                    }
+                                }
 
                             translate([0, -a / 2, 0])
-                                circle(d = c);
+                                rotate_extrude()
+                                    polygon(points = points);
 
-                            intersection() {
-                                translate([-c / 2, -(c * 2 - a) / 2, 0])
-                                    circle(r = c);
+                            translate([0.15, -a / 2, hinge_depth + 0.01])
+                                rotate([180, 0, 0])
+                                    rotate_extrude()
+                                        polygon(points = points);
 
-                                square([c, a], center = true);
-                            }
                         }
+            }
 
-                    translate([0, -a / 2, -0.01])
-                        rotate_extrude()
-                            polygon(points = socket_points);
+            translate([hinge_distance, 0, offset_from_top])
+                hinge_2_1();
 
-                    translate([0, -a / 2, knuckle_width + 0.01])
-                        rotate([180, 0, 0])
-                            rotate_extrude()
-                                polygon(points = socket_points);
+            translate([-hinge_distance, 0, offset_from_top])
+                hinge_2_1();
+
+        }
+
+        if (body)
+            box_with_cutout(width, depth, height_top, wall);
+
+        if (hinge)
+            hinge_2();
+    }
+
+    module bottom_part(body = true, hinge = true) {
+
+        module hinge_1() {
+            w = hinge_width + 2.5; // width
+            dist = 2.8; // distance from the wall
+            d = 5; // diameter of circle
+            t = 2.5; // thickness
+            ft = 2.5; // from top
+            h = 1.0; // height of cone
+            r = 2.4; // radius of cone
+
+            module hinge_1_1(dist, d, t, ft) {
+                translate([-t / 2, depth / 2 + dist, height_bottom - ft])
+                    rotate([90, 180, 90])
+                        linear_extrude(height = t)
+                            difference() {
+                                union() {
+                                    circle(d = d);
+                                    translate([0, -d / 2, 0])
+                                        square([dist, d + d / 2]);
+                                }
+
+                                translate([0, (dist + d / 2), 0])
+                                    circle(d = dist * 2);
+                            }
+            }
+
+            module hinge_1_2(h) {
+                points = [
+                        [0, 0],
+                        [r, 0],
+                        [0, h]
+                    ];
+
+                rotate([0, 90, 0])
+                    rotate_extrude()
+                        polygon(points = points);
+            }
+
+
+            translate([hinge_distance, 0, 0])
+                union() {
+                    translate([w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+                    translate([-w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+
+                    translate([-w / 2 + t / 2, depth / 2 + dist, height_bottom - ft])
+                        hinge_1_2(h = h);
+
+                    translate([w / 2 - t / 2, depth / 2 + dist, height_bottom - ft])
+                        rotate([0, 180, 0])
+                            hinge_1_2(h = h);
                 }
 
-        // anchor inside the lid wall
-        translate([-knuckle_width / 2, -depth / 2 - 0.6, height_top - 5 - offset_from_top])
-            cube([knuckle_width, 1.1, 5]);
+            translate([-hinge_distance, 0, 0])
+                union() {
+                    translate([w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+                    translate([-w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+
+                    translate([-w / 2 + t / 2, depth / 2 + dist, height_bottom - ft])
+                        hinge_1_2(h = h);
+
+                    translate([w / 2 - t / 2, depth / 2 + dist, height_bottom - ft])
+                        rotate([0, 180, 0])
+                            hinge_1_2(h = h);
+                }
+        }
+
+        if (hinge)
+            hinge_1();
+
+        if (body)
+            box_with_cutout(width, depth, height_bottom, wall);
     }
 
-    for (x = [hinge_distance, -hinge_distance])
-        translate([x, 0, offset_from_top])
-            knuckle();
-}
-
-module bottom_part() {
-    box_with_cutout(width, depth, height_bottom, wall);
-    lip();
-    bottom_latch();
-    bottom_hinge();
-}
-
-// Print orientation: outer top face on the bed, hinge on -Y, latch on +Y
-module lid_part() {
-    difference() {
-        box_with_cutout(width, depth, height_top, wall);
-        lip_recess();
+    module placed_top(body, hinge) {
+        if (exploded)
+            translate([0, depth + 15, 0])
+                top_part(body, hinge);
+        else
+            translate([0, 0, height_bottom + height_top])
+                rotate([180, 0, 0])
+                    top_part(body, hinge);
     }
-    lid_latch();
-    lid_hinge();
+
+    if (show == "all" || show == "top")
+        color([1, 1, 0, 0.5]) placed_top(true, false);
+
+    if (show == "all" || show == "hinge_top")
+        color([1, 0.5, 0, 0.5]) placed_top(false, true);
+
+    if (show == "all" || show == "bottom")
+        color([0, 1, 1, 0.2]) bottom_part(true, false);
+
+    if (show == "all" || show == "hinge_bottom")
+        color([0, 0.5, 1, 0.2]) bottom_part(false, true);
 }
 
-// Flipped around X so the hinge ends up on +Y, matching the bottom part
-module lid_closed() {
-    translate([0, 0, height_bottom + height_top])
-        rotate([180, 0, 0])
-            lid_part();
-}
-
-if (part == "bottom") {
-    bottom_part();
-} else if (part == "lid") {
-    lid_part();
-} else if (part == "lid_closed") {
-    lid_closed();
-} else {
-    color([0, 1, 1])
-        bottom_part();
-    color([1, 1, 0])
-        translate([0, depth + 15, 0])
-            lid_part();
-}
+box();
