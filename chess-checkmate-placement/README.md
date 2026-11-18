@@ -1,9 +1,8 @@
 # aeo/chess-checkmate-placement
 
 A Python-only Harbor task: read ten-digit piece-count strings from stdin and
-write legal FENs in which Black is checkmated. The agent gets `python-chess`;
-the solution may not rely on the unrelated C++ chess-library source in this
-repository.
+write legal FENs in which Black is checkmated. The agent gets `python-chess`
+and must not rely on any other chess engine or library.
 
 ## Layout
 
@@ -37,4 +36,11 @@ test files and dependencies.
 python3 -m pip install python-chess pytest
 cd chess-checkmate-placement/solution
 CHESS_TESTS_FILE=../tests/tests.txt python3 -m pytest ../tests/test_outputs.py -q
+```
+
+## Running
+
+```bash
+harbor run -p chess-checkmate-placement --agent oracle   # expected reward 1
+harbor run -p chess-checkmate-placement --agent nop      # expected reward 0
 ```
