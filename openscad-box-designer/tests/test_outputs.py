@@ -11,7 +11,8 @@ PATHS = {n: os.path.join(WORKDIR, f"{n}.stl") for n in NAMES}
 
 # Volumes below this fraction of the total volume count as mere surface contact.
 VOLUME_TOLERANCE = 1e-6
-ANGLE_STEP_DEG = 10
+ANGLE_STEP_DEG = 1
+TRANSLATION_SAMPLE_COUNT = 96
 
 
 def load_all():
@@ -69,6 +70,14 @@ def test_files_exist():
         assert os.path.isfile(path), f"{path} not found"
 
 
+def test_each_part_is_watertight():
+    for name, mesh in load_all().items():
+        assert np.isfinite(mesh.vertices).all(), f"{name} contains non-finite vertices"
+        assert mesh.is_watertight, f"{name} is not watertight"
+        assert mesh.is_winding_consistent, f"{name} has inconsistent face winding"
+        assert abs(mesh.volume) > 0, f"{name} has zero volume"
+
+
 def test_no_volumetric_overlap():
     meshes = load_all()
     total = sum(abs(m.volume) for m in meshes.values())
@@ -92,11 +101,21 @@ def test_linearly_locked():
         manager.add_object(f"moving{i}", mesh)
 
     test_distance = float(np.mean(meshes["bottom"].extents) * 0.02)
+    grid_directions = []
     for x, y, z in itertools.product([-1, 0, 1], repeat=3):
-        if x == y == z == 0:
-            continue
         direction = np.array([x, y, z], dtype=float)
-        direction /= np.linalg.norm(direction)
+        if np.any(direction):
+            grid_directions.append(direction / np.linalg.norm(direction))
+
+    indices = np.arange(TRANSLATION_SAMPLE_COUNT)
+    z = 1 - 2 * (indices + 0.5) / TRANSLATION_SAMPLE_COUNT
+    azimuth = np.pi * (1 + np.sqrt(5)) * indices
+    radius = np.sqrt(1 - z * z)
+    sphere_directions = np.column_stack(
+        (radius * np.cos(azimuth), radius * np.sin(azimuth), z)
+    )
+
+    for direction in np.concatenate((grid_directions, sphere_directions)):
         collides = False
         for mesh in fixed:
             shifted = mesh.copy()

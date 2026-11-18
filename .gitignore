@@ -4,3 +4,4 @@ run.sh
 jobs/
 .pytest_cache/
 .DS_Store
+__pycache__/

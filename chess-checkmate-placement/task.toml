@@ -1,0 +1,40 @@
+schema_version = "1.4"
+artifacts = [
+  { source = "/workspace/solution" },
+]
+
+[task]
+name = "aeo/chess-checkmate-placement"
+version = "1.0.0"
+description = "Read piece-count strings and construct valid checkmate FENs using python-chess."
+authors = []
+keywords = ["chess", "python", "search", "checkmate", "fen"]
+
+[metadata]
+category = "software-engineering"
+tags = ["python", "chess", "algorithm-design"]
+difficulty_explanation = "The solver must parse a compact stream interface and construct positions satisfying checkmate, exact inventory, king safety, and pawn-rank constraints. A sparse white king-and-knight inventory must mate a full black set using black pieces as blockers; randomized evolutionary search can produce illegal positions."
+solution_explanation = "A deterministic construction starts from a mating pattern and incrementally places the remaining pieces, retaining only placements that preserve a legal checkmate."
+verification_explanation = "Tests read all count strings from tests/tests.txt, feed them to the program in one process, validate each returned FEN with python-chess, and enforce a 10-second global runtime limit."
+expert_time_estimate_hours = 2
+relevant_experience = ""
+
+[verifier]
+timeout_sec = 120.0
+environment_mode = "separate"
+collect = []
+
+[verifier.env]
+
+[agent]
+timeout_sec = 600.0
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+os = "linux"
+mcp_servers = []
+
+[environment.env]
+
+[solution.env]
