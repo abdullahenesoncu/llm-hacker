@@ -11,6 +11,9 @@ authors = []
 keywords = ["chess", "python", "search", "checkmate", "fen"]
 
 [metadata]
+author_name = "Abdullah Enes Öncü"
+author_email = "abdullahenesoncu@gmail.com"
+author_organization = ""
 category = "software-engineering"
 tags = ["python", "chess", "algorithm-design"]
 difficulty_explanation = "The solver must parse a compact stream interface and construct positions satisfying checkmate, exact inventory, king safety, and pawn-rank constraints. A sparse white king-and-knight inventory must mate a full black set using black pieces as blockers; randomized evolutionary search can produce illegal positions."

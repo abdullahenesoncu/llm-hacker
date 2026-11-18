@@ -15,6 +15,16 @@ authors = []
 keywords = ["openscad", "3d-design", "box", "lid", "hinge", "parametric"]
 
 [metadata]
+author_name = "Abdullah Enes Öncü"
+author_email = "abdullahenesoncu@gmail.com"
+author_organization = ""
+category = "software-engineering"
+tags = ["openscad", "3d-design", "geometry", "mechanical-design"]
+difficulty_explanation = "Besides capture and collision-free rotation, the model must hit exact dimensions, use two symmetric hinge stations with sub-0.5 mm clearance, and avoid separate pins. The hinge axis must be inferred from contact geometry."
+solution_explanation = "A parametric BOSL2/OpenSCAD script with a `show` selector renders bottom, top, hinge_bottom and hinge_top from one set of shared parameters, using an interlocking knuckle hinge that is captured in all translation directions."
+verification_explanation = "tests/test_outputs.py loads the four STLs untransformed and checks mesh validity, watertightness (each part and combined), absence of volumetric overlap, hinge contact, axis inference from contact geometry, translational capture and collision-free lid rotation using trimesh and python-fcl."
+expert_time_estimate_hours = 3
+relevant_experience = ""
 
 [verifier]
 timeout_sec = 1200.0

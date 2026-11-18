@@ -50,7 +50,3 @@ The algorithm is standard, but the merge function is a numba `cfunc` operating o
 harbor run -p python-data-manipulation --agent oracle   # expected reward 1
 harbor run -p python-data-manipulation --agent nop      # expected reward 0
 ```
-
-## TODO before submission
-
-Fill `author_name`, `author_email`, `author_organization` and `relevant_experience` in `task.toml`.

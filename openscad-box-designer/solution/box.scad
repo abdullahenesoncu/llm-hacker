@@ -1,145 +1,230 @@
-/* Parametric captive-hinge storage box. Units: mm.
- * Coordinates: X width, Y front-to-back, Z up. Closed configuration.
- * Export: openscad --export-format binstl -o bottom.stl -D 'show="bottom"' box.scad
- * Opening is -180 degrees about the journal axis; closing reverses that path.
- * Separate +180 degrees from closed is NOT a permissible motion.
- * The four files are intended for printing together in their native coordinates.
- * Body/hinge keyed interfaces have zero clearance (rigid, contacting interfaces).
- * Journal cavities have 0.4 mm diametral clearance; captive flanges have
- * 0.25 mm axial clearance on either side. Journals rest against cavity floors.
- */
-show = "all";
-width=200;
-depth=100;
-body_height=60;
-lid_height=10;
-wall=2;
-hinge_count=2;
-station_inset=30;
-fit=0.25;
-rim_height=2;
-rim_inset=wall+fit;
-lid_z=body_height-rim_height+fit;
-axis_y=depth+14;
-axis_z=lid_z;
-stations=[station_inset,width-station_inset];
-$fn=128;
-shaft_r=2.5;
-radial_gap=0.2;
-flange_r=3.8;
-cup_r=6;
-key_width=12;
-body_key_z=44;
-lid_key_z=lid_z+2;
-assert(hinge_count==2,"This layout uses exactly two stations.");
-assert(width>2*station_inset+30 && wall>0 && fit>0);
-assert(show=="all" || show=="bottom" || show=="top" ||
-       show=="hinge_bottom" || show=="hinge_top","Unknown show selector");
+include <BOSL2/std.scad>
 
-module block(x0,x1,y0,y1,z0,z1) {
-    translate([x0,y0,z0]) cube([x1-x0,y1-y0,z1-z0]);
-}
-module xcylinder(x0,x1,y,z,r,phase=0) {
-    translate([x0,y,z]) rotate([0,90,0]) rotate([0,0,phase])
-        cylinder(h=x1-x0,r=r);
-}
-module frame(inset,z0,z1) {
-    difference() {
-        block(inset,width-inset,inset,depth-inset,z0,z1);
-        block(inset+wall,width-inset-wall,inset+wall,depth-inset-wall,z0-1,z1+1);
-    }
-}
-// T-heads cannot leave their enclosing sockets by straight translation.
-module mounting_key(x,z) {
-    union() {
-        block(x-4,x+4,depth,depth+4,z+1,z+5);
-        block(x-key_width/2,x+key_width/2,depth+3,depth+6,z,z+6);
-    }
-}
-module bottom() {
-    union() {
+$fn = 64;
+
+/* [Size] */
+// Box width
+width = 200; // [30:1:256]
+// Box depth
+depth = 100; // [30:1:256]
+// Lid height
+height_top = 10; // [10:1:256]
+// Bottom part height
+height_bottom = 60; // [10:1:256]
+// Wall thickness
+wall = 2;
+
+/* [Hinges] */
+// Distance from box side to the hinges
+hinge_from_wall = 10; // [7:1:120]
+// Width of the hinges
+hinge_width = 10; // [4:1:50]
+
+
+/* [Other] */
+// Show as two separate pieces
+exploded = false;
+// Which part to render: all, bottom, top, hinge_bottom or hinge_top
+show = "all"; // [all:bottom:top:hinge_bottom:hinge_top]
+
+// Simple parser
+function parse_string(input_str) =
+let(
+    // Split the input string into blocks (separated by spaces)
+    blocks = [for (s = str_split(input_str, " ")) s],
+
+    // Process each block into its own array
+    result = [for (block = blocks)
+        let(
+            // First character is the type (v or h)
+            type = substr(block, 0, 1),
+            // Rest is numbers separated by commas
+            numbers_str = substr(block, 1),
+            // Split numbers by comma and convert to numbers
+            numbers = [for (n = str_split(numbers_str, ",")) is_letter(n) ? n : parse_float(n)]
+        )
+        concat([type], numbers)
+        ]
+)
+result;
+
+// Actual code
+module box() {
+    hinge_distance = width / 2 - hinge_from_wall - hinge_width / 2;
+
+    module box_with_cutout(width, depth, height, wall) {
         difference() {
-            block(0,width,0,depth,0,body_height-rim_height);
-            block(wall,width-wall,wall,depth-wall,wall,body_height-2*rim_height);
-            block(rim_inset+wall,width-rim_inset-wall,
-                  rim_inset+wall,depth-rim_inset-wall,wall,body_height+1);
-        }
-        frame(rim_inset,body_height-rim_height,body_height);
-        for(x=stations) mounting_key(x,body_key_z);
-    }
-}
-module top() {
-    union() {
-        difference() {
-            block(0,width,0,depth,lid_z,lid_z+lid_height);
-            block(wall,width-wall,wall,depth-wall,lid_z-1,lid_z+lid_height-wall);
-        }
-        for(x=stations) mounting_key(x,lid_key_z);
-    }
-}
-module stationary_blank(x) {
-    block(x-9,x+9,depth,depth+8,body_key_z-2,body_key_z+8);
-    block(x-9,x+9,depth+2,axis_y+6,body_key_z,body_key_z+4);
-    for(side=[-1,1]) {
-        a=side<0 ? x-14 : x+6.25;
-        b=side<0 ? x-6.25 : x+14;
-        xcylinder(a,b,axis_y,axis_z,cup_r);
-        block(a,b,axis_y,axis_y+cup_r,body_key_z+2,axis_z);
-    }
-}
-module bearing_cavities(x) {
-    // Circumscribed bore polygons contain the true circular shaft envelope.
-    // Their bottom facets touch the shaft's bottom vertex along X at rest.
-    for(side=[-1,1]) {
-        a=side<0 ? x-11.75 : x+6;
-        b=side<0 ? x-6 : x+11.75;
-        xcylinder(a,b,axis_y,axis_z+radial_gap,
-                  (shaft_r+radial_gap)/cos(180/$fn),180/$fn);
-        fa=side<0 ? x-11.25 : x+8.75;
-        fb=side<0 ? x-8.75 : x+11.25;
-        xcylinder(fa,fb,axis_y,axis_z,
-                  (flange_r+radial_gap)/cos(180/$fn),180/$fn);
-    }
-}
-module hinge_bottom() {
-    difference() {
-        union() {
-            for(x=stations) stationary_blank(x);
-            // Connect both stations into one printable, connected mesh.
-            block(stations[0],stations[1],axis_y+2,axis_y+6,body_key_z,body_key_z+3);
-        }
-        for(x=stations) {
-            mounting_key(x,body_key_z);
-            bearing_cavities(x);
+            translate([-width / 2, -depth / 2, 0])
+                cube([width, depth, height]);
+
+            translate([-width / 2 + wall, -depth / 2 + wall, wall])
+                // +1 is for fixing geometry in openscad
+                cube([width - wall * 2, depth - wall * 2, height - wall + 1]);
         }
     }
-}
-module rotating_blank(x) {
-    block(x-8,x+8,depth,depth+7,lid_z+1,lid_z+9);
-    hull() {
-        xcylinder(x-4,x+4,depth+6,lid_z+5,2);
-        xcylinder(x-4,x+4,axis_y,axis_z,2);
-    }
-    xcylinder(x-11.5,x+11.5,axis_y,axis_z,shaft_r);
-    xcylinder(x-11,x-9,axis_y,axis_z,flange_r);
-    xcylinder(x+9,x+11,axis_y,axis_z,flange_r);
-}
-module hinge_top() {
-    difference() {
-        union() {
-            for(x=stations) rotating_blank(x);
-            block(stations[0],stations[1],depth,depth+3,lid_z+4,lid_z+6);
+
+    module top_part(body = true, hinge = true) {
+
+        module hinge_2() {
+            a = 8.817;
+            b = 3.714;
+            c = 5.6;
+            e = 5.214;
+            hinge_depth = hinge_width - 0.3; // depth
+            offset_from_top = -1.1; // from top
+
+            points = [
+                    [0, 0],
+                    [2.5, 0],
+                    [0, 0.9]
+                ];
+
+            module hinge_2_1() {
+                translate([-hinge_depth / 2, -depth / 2 - c / 2, a / 2 + height_top - e])
+                    rotate([90, -180, 90])
+                        difference() {
+                            linear_extrude(height = hinge_depth)
+                                union() {
+                                    translate([0, -(a - b) / 2, 0])
+                                        square([c, b], center = true);
+
+                                    translate([0, -a / 2, 0])
+                                        circle(d = c);
+
+                                    intersection() {
+                                        translate([-c / 2, -(c * 2 - a) / 2, 0])
+                                            circle(r = c);
+
+                                        square([c, a], center = true);
+                                    }
+                                }
+
+                            translate([0, -a / 2, 0])
+                                rotate_extrude()
+                                    polygon(points = points);
+
+                            translate([0.15, -a / 2, hinge_depth + 0.01])
+                                rotate([180, 0, 0])
+                                    rotate_extrude()
+                                        polygon(points = points);
+
+                        }
+            }
+
+            translate([hinge_distance, 0, offset_from_top])
+                hinge_2_1();
+
+            translate([-hinge_distance, 0, offset_from_top])
+                hinge_2_1();
+
         }
-        for(x=stations) mounting_key(x,lid_key_z);
+
+        if (body)
+            box_with_cutout(width, depth, height_top, wall);
+
+        if (hinge)
+            hinge_2();
     }
+
+    module bottom_part(body = true, hinge = true) {
+
+        module hinge_1() {
+            w = hinge_width + 2.5; // width
+            dist = 2.8; // distance from the wall
+            d = 5; // diameter of circle
+            t = 2.5; // thickness
+            ft = 2.5; // from top
+            h = 1.0; // height of cone
+            r = 2.4; // radius of cone
+
+            module hinge_1_1(dist, d, t, ft) {
+                translate([-t / 2, depth / 2 + dist, height_bottom - ft])
+                    rotate([90, 180, 90])
+                        linear_extrude(height = t)
+                            difference() {
+                                union() {
+                                    circle(d = d);
+                                    translate([0, -d / 2, 0])
+                                        square([dist, d + d / 2]);
+                                }
+
+                                translate([0, (dist + d / 2), 0])
+                                    circle(d = dist * 2);
+                            }
+            }
+
+            module hinge_1_2(h) {
+                points = [
+                        [0, 0],
+                        [r, 0],
+                        [0, h]
+                    ];
+
+                rotate([0, 90, 0])
+                    rotate_extrude()
+                        polygon(points = points);
+            }
+
+
+            translate([hinge_distance, 0, 0])
+                union() {
+                    translate([w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+                    translate([-w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+
+                    translate([-w / 2 + t / 2, depth / 2 + dist, height_bottom - ft])
+                        hinge_1_2(h = h);
+
+                    translate([w / 2 - t / 2, depth / 2 + dist, height_bottom - ft])
+                        rotate([0, 180, 0])
+                            hinge_1_2(h = h);
+                }
+
+            translate([-hinge_distance, 0, 0])
+                union() {
+                    translate([w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+                    translate([-w / 2, 0, 0])
+                        hinge_1_1(dist = dist, d = d, t = t, ft = ft);
+
+                    translate([-w / 2 + t / 2, depth / 2 + dist, height_bottom - ft])
+                        hinge_1_2(h = h);
+
+                    translate([w / 2 - t / 2, depth / 2 + dist, height_bottom - ft])
+                        rotate([0, 180, 0])
+                            hinge_1_2(h = h);
+                }
+        }
+
+        if (hinge)
+            hinge_1();
+
+        if (body)
+            box_with_cutout(width, depth, height_bottom, wall);
+    }
+
+    module placed_top(body, hinge) {
+        if (exploded)
+            translate([0, depth + 15, 0])
+                top_part(body, hinge);
+        else
+            translate([0, 0, height_bottom + height_top])
+                rotate([180, 0, 0])
+                    top_part(body, hinge);
+    }
+
+    if (show == "all" || show == "top")
+        color([1, 1, 0, 0.5]) placed_top(true, false);
+
+    if (show == "all" || show == "hinge_top")
+        color([1, 0.5, 0, 0.5]) placed_top(false, true);
+
+    if (show == "all" || show == "bottom")
+        color([0, 1, 1, 0.2]) bottom_part(true, false);
+
+    if (show == "all" || show == "hinge_bottom")
+        color([0, 0.5, 1, 0.2]) bottom_part(false, true);
 }
-if(show=="bottom") bottom();
-if(show=="top") top();
-if(show=="hinge_bottom") hinge_bottom();
-if(show=="hinge_top") hinge_top();
-if(show=="all") {
-    color("lightgray") bottom();
-    color([0.3,0.6,0.9,0.6]) top();
-    color("orange") hinge_bottom();
-    color("gold") hinge_top();
-}
+
+box();
